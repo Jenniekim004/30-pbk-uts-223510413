@@ -1,239 +1,63 @@
 <template>
-   <div class="background-image">
-
-  </div>
+  <div class="background-image"></div>
   <div>
-
-    
     <header>
       <nav class="navbar">
         <ul class="nav-list">
           <li class="nav-item">
-            <button
-              @click="showTodos"
-              :class="{ active: activeMenu === 'todos' }"
-            >
-
-
-            
+            <button @click="showTodos" :class="{ active: activeMenu === 'todos' }">
               TODOS
             </button>
           </li>
           <li class="nav-item">
-            <button
-              @click="showPosts"
-              :class="{ active: activeMenu === 'posts' }"
-            >
-
-
+            <button @click="showPosts" :class="{ active: activeMenu === 'posts' }">
               POST
             </button>
           </li>
         </ul>
       </nav>
     </header>
-
-
-    
     <main>
-      <div v-if="activeMenu === 'todos'">
-        <div class="task-manager">
-          <h1 class="title">Add Album</h1>
-          <form @submit.prevent="addTask" class="task-form">
-            <div class="input-container">
-              <input
-                v-model="newTask"
-                placeholder="Nama Album"
-                required
-                class="task-input"
-              />
-              
-              
-
-              <button type="submit" class="add-button">Tambahkan</button>
-            </div>
-          </form>
-          <div v-if="tasks.length > 0" class="task-list">
-            <h2 class="list-title">Daftar Album</h2>
-            <ul>
-              <li
-                v-for="task in filteredTasks"
-                :key="task.id"
-                class="task-item"
-              >
-                <label class="task-label">
-                  <input
-                    type="checkbox"
-                    @change="toggleComplete(task)"
-                    :checked="task.completed"
-                  />
-                  <span class="checkmark"></span>
-                  <span
-                    class="task-name"
-                    :class="{ completed: task.completed }"
-                  >
-                    {{ task.name }}
-                  </span>
-                  <span class="task-date">{{ task.date }}</span>
-                  <span class="task-status">
-                    {{ task.completed ? "Ready" : "Not Ready" }}
-                  </span>
-                </label>
-                <button @click="removeTask(task)" class="remove-button">
-                  Hapus
-                </button>
-              </li>
-            </ul>
-          </div>
-          <div v-else>
-            <p class="no-tasks">Tidak Ada Album:</p>
-          </div>
-          <div class="filters">
-            <h2 class="list-title">Filter</h2>
-            <button
-              @click="filter = 'all'"
-              :class="{ active: filter === 'all' }"
-            >
-              Semua
-            </button>
-            <button
-              @click="filter = 'active'"
-              :class="{ active: filter === 'active' }"
-            >
-              Not Ready
-            </button>
-            <button
-              @click="filter = 'completed'"
-              :class="{ active: filter === 'completed' }"
-            >
-              Selesai
-            </button>
-          </div>
-        </div>
-      </div>
-      <div v-else-if="activeMenu === 'posts'">
-        <h1>POST</h1>
-        <select v-model="selectedUser">
-          <option v-for="user in users" :key="user.id" :value="user.id">
-            {{ user.name }}
-          </option>
-        </select>
-        <div v-if="filteredPosts.length > 0">
-          <ul>
-            <li v-for="post in filteredPosts" :key="post.id">
-              {{ post.title }}
-            </li>
-          </ul>
-        </div>
-        <div v-else>
-        </div>
-      </div>
+      <Todos v-if="activeMenu === 'todos'" />
+      <Posts v-else-if="activeMenu === 'posts'" />
     </main>
   </div>
   <div id="app">
-  <header class="header">
-    <h1 class="header__title">Selamat Datang</h1>
-    <p class="header__subtitle">Ikhlasul Qalbi 2024</p>
-  </header>
-</div>
-
+    <header class="header">
+      <h1 class="header__title">Selamat Datang</h1>
+      <p class="header__subtitle">Ikhlasul Qalbi 2024</p>
+    </header>
+  </div>
 </template>
 
 <script>
+import Todos from "./components/Todos.vue";
+import Posts from "./components/Post.vue";
+
 export default {
+  components: {
+    Todos,
+    Posts,
+  },
   data() {
     return {
-      users: [],
-      posts: [],
       activeMenu: "",
-      selectedUser: null,
-      newTask: "",
-      newTaskDate: "",
-      tasks: [],
-      filter: "all",
     };
   },
-  computed: {
-    selectedUserName() {
-      const user = this.users.find((u) => u.id === this.selectedUser);
-      return user ? user.name : "";
-    },
-    filteredPosts() {
-      return this.posts.filter((post) => post.userId === this.selectedUser);
-    },
-    filteredTasks() {
-      if (this.filter === "active") {
-        return this.tasks.filter((task) => !task.completed);
-      } else if (this.filter === "completed") {
-        return this.tasks.filter((task) => task.completed);
-      } else {
-        return this.tasks;
-      }
-    },
-  },
   methods: {
-    async fetchUsers() {
-      try {
-        const response = await fetch(
-          "https://jsonplaceholder.typicode.com/users"
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const json = await response.json();
-        this.users = json;
-      } catch (error) {
-        console.error("Error fetching users data:", error);
-      }
-    },
-    async fetchPosts() {
-      try {
-        const response = await fetch(
-          "https://jsonplaceholder.typicode.com/posts"
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const json = await response.json();
-        this.posts = json;
-      } catch (error) {
-        console.error("Error fetching posts data:", error);
-      }
-    },
     showTodos() {
       this.activeMenu = "todos";
     },
     showPosts() {
       this.activeMenu = "posts";
-      this.fetchPosts();
     },
-    addTask() {
-      if (this.newTask.trim() !== "") {
-        this.tasks.push({
-          id: Date.now(),
-          name: this.newTask,
-          date: this.newTaskDate,
-          completed: false,
-        });
-        this.newTask = "";
-        this.newTaskDate = "";
-      }
-    },
-    removeTask(task) {
-      const index = this.tasks.indexOf(task);
-      if (index !== -1) {
-        this.tasks.splice(index, 1);
-      }
-    },
-    toggleComplete(task) {
-      task.completed = !task.completed;
-    },
-  },
-  mounted() {
-    this.fetchUsers();
   },
 };
 </script>
+
+<style scoped>
+/* Your styles here */
+</style>
 
 <style scoped>
 
@@ -389,4 +213,3 @@ main {
   text-align: center;
 }
 </style>
-
