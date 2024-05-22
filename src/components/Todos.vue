@@ -79,10 +79,6 @@
   </script>
   
   <style scoped>
-  /* Your styles here */
-  </style>
-  
-  <style scoped>
 
 
 .nav-list {
