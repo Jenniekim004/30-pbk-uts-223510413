@@ -1,86 +1,84 @@
 <template>
-    <div class="task-manager">
-      <h1 class="title">Add Album</h1>
-      <form @submit.prevent="addTask" class="task-form">
-        <div class="input-container">
-          <input v-model="newTask" placeholder="Nama Album" required class="task-input" />
-          <button type="submit" class="add-button">Tambahkan</button>
-        </div>
-      </form>
-      <div v-if="tasks.length > 0" class="task-list">
-        <h2 class="list-title">Daftar Album</h2>
-        <ul>
-          <li v-for="task in filteredTasks" :key="task.id" class="task-item">
-            <label class="task-label">
-              <input type="checkbox" @change="toggleComplete(task)" :checked="task.completed" />
-              <span class="checkmark"></span>
-              <span class="task-name" :class="{ completed: task.completed }">{{ task.name }}</span>
-              <span class="task-date">{{ task.date }}</span>
-              <span class="task-status">{{ task.completed ? "Ready" : "Not Ready" }}</span>
-            </label>
-            <button @click="removeTask(task)" class="remove-button">Hapus</button>
-          </li>
-        </ul>
+  <div class="task-manager">
+    <h1 class="title">Add Album</h1>
+    <form @submit.prevent="addTask" class="task-form">
+      <div class="input-container">
+        <input v-model="newTask" placeholder="Nama Album" required class="task-input" />
+        <button type="submit" class="add-button">Tambahkan</button>
       </div>
-      <div v-else>
-        <p class="no-tasks">Tidak Ada Album:</p>
-      </div>
-      <div class="filters">
-        <h2 class="list-title">Filter</h2>
-        <button @click="filter = 'all'" :class="{ active: filter === 'all' }">Semua</button>
-        <button @click="filter = 'active'" :class="{ active: filter === 'active' }">Not Ready</button>
-        <button @click="filter = 'completed'" :class="{ active: filter === 'completed' }">Selesai</button>
-      </div>
+    </form>
+    <div v-if="tasks.length > 0" class="task-list">
+      <h2 class="list-title">Daftar Album</h2>
+      <ul>
+        <li v-for="task in filteredTasks" :key="task.id" class="task-item">
+          <label class="task-label">
+            <input type="checkbox" @change="toggleComplete(task)" :checked="task.completed" />
+            <span class="checkmark"></span>
+            <span class="task-name" :class="{ completed: task.completed }">{{ task.name }}</span>
+            <span class="task-date">{{ task.date }}</span>
+            <span class="task-status">{{ task.completed ? "Ready" : "Not Ready" }}</span>
+          </label>
+          <button @click="removeTask(task)" class="remove-button">Hapus</button>
+        </li>
+      </ul>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-      return {
-        newTask: "",
-        tasks: [],
-        filter: "all",
-      };
-    },
-    computed: {
-      filteredTasks() {
-        if (this.filter === "active") {
-          return this.tasks.filter(task => !task.completed);
-        } else if (this.filter === "completed") {
-          return this.tasks.filter(task => task.completed);
-        } else {
-          return this.tasks;
-        }
-      },
-    },
-    methods: {
-      addTask() {
-        if (this.newTask.trim() !== "") {
-          this.tasks.push({
-            id: Date.now(),
-            name: this.newTask,
-            completed: false,
-          });
-          this.newTask = "";
-        }
-      },
-      removeTask(task) {
-        const index = this.tasks.indexOf(task);
-        if (index !== -1) {
-          this.tasks.splice(index, 1);
-        }
-      },
-      toggleComplete(task) {
-        task.completed = !task.completed;
-      },
-    },
-  };
-  </script>
-  
-  <style scoped>
+    <div v-else>
+      <p class="no-tasks">Tidak Ada Album:</p>
+    </div>
+    <div class="filters">
+      <h2 class="list-title">Filter</h2>
+      <button @click="filter = 'all'" :class="{ active: filter === 'all' }">Semua</button>
+      <button @click="filter = 'active'" :class="{ active: filter === 'active' }">Not Ready</button>
+      <button @click="filter = 'completed'" :class="{ active: filter === 'completed' }">Selesai</button>
+    </div>
+  </div>
+</template>
 
+<script>
+export default {
+  data() {
+    return {
+      newTask: "",
+      tasks: [],
+      filter: "all",
+    };
+  },
+  computed: {
+    filteredTasks() {
+      if (this.filter === "active") {
+        return this.tasks.filter(task => !task.completed);
+      } else if (this.filter === "completed") {
+        return this.tasks.filter(task => task.completed);
+      } else {
+        return this.tasks;
+      }
+    },
+  },
+  methods: {
+    addTask() {
+      if (this.newTask.trim() !== "") {
+        this.tasks.push({
+          id: Date.now(),
+          name: this.newTask,
+          completed: false,
+        });
+        this.newTask = "";
+      }
+    },
+    removeTask(task) {
+      const index = this.tasks.indexOf(task);
+      if (index !== -1) {
+        this.tasks.splice(index, 1);
+      }
+    },
+    toggleComplete(task) {
+      task.completed = !task.completed;
+    },
+  },
+};
+</script>
 
+<style scoped>
 .nav-list {
   list-style-type: none;
   padding: 0;
@@ -111,7 +109,6 @@
 main {
   padding: 1em;
 }
-
 
 
 .title {
@@ -173,7 +170,6 @@ main {
   color: rgb(0, 0, 0);
 }
 
-
 .task-list {
   margin-bottom: 20px;
 }
@@ -231,4 +227,5 @@ main {
 .no-tasks {
   text-align: center;
 }
+
 </style>
