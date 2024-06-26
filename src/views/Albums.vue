@@ -1,66 +1,65 @@
 <template>
-    <q-page class="q-pa-xl">
-      <q-spinner v-if="isLoading" size="lg" color="primary" />
-      <div v-else class="photo-grid">
-        <q-img
-          v-for="photo in photos"
-          :key="photo.id"
-          :src="photo.thumbnailUrl"
-          :alt="photo.title"
-          class="cursor-pointer"
-          @click="selectPhoto(photo.id)"
-          style="width: 150px; height: 150px;"
-        ></q-img>
-      </div>
-    </q-page>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from "vue";
-  import { useRouter } from "vue-router";
-  
-  const router = useRouter();
-  const photos = ref([]);
-  const isLoading = ref(false);
-  
-  const fetchPhotos = async (albumId = 1) => {
-    try {
-      isLoading.value = true;
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/photos?albumId=${albumId}`
-      ); // Directly fetch filtered data
-      const data = await response.json();
-      photos.value = data.map((photo) => ({
-        id: photo.id,
-        thumbnailUrl: photo.thumbnailUrl,
-        url: photo.url,
-        title: photo.title,
-      }));
-    } catch (error) {
-      console.error("Error fetching photos:", error);
-    } finally {
-      isLoading.value = false;
-    }
-  };
-  
-  const selectPhoto = (photoId) => {
-    router.push({ path: `/albums/${photoId}` });
-  };
-  
-  onMounted(() => {
-    fetchPhotos();
-  });
-  </script>
-  
-  <style scoped>
-  .cursor-pointer {
-    cursor: pointer;
+  <div class="album-list-container">
+    <h2 class="title">Albums</h2>
+    <ul class="album-list">
+      <li v-for="album in albums" :key="album.id" @click="selectAlbum(album.id)" class="album-item">
+        {{ album.title }}
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+const albums = ref([]);
+
+const fetchAlbums = async () => {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/albums');
+    albums.value = await response.json();
+  } catch (error) {
+    console.error("Error fetching albums:", error);
   }
-  
-  .photo-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-  }
-  </style>
-  
+};
+
+const selectAlbum = (albumId) => {
+  router.push({ path: `/albums/${albumId}` });
+};
+
+onMounted(() => {
+  fetchAlbums();
+});
+</script>
+
+<style scoped>
+.album-list-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.title {
+  color: #2b2d2e;
+  margin-bottom: 20px;
+}
+
+.album-list {
+  list-style: none;
+  padding: 0;
+}
+
+.album-item {
+  cursor: pointer;
+  padding: 10px;
+  border: 1px solid #151515;
+  border-radius: 5px;
+  margin: 5px 0;
+  transition: background-color 0.3s;
+}
+
+.album-item:hover {
+  background-color: #f0f0f0;
+}
+</style>

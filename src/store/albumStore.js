@@ -1,23 +1,32 @@
 import { defineStore } from 'pinia';
 
-export const useAlbumStore = defineStore({
-  id: 'album',
+export const useAlbumsStore = defineStore('albums', {
   state: () => ({
     albums: [],
-    loading: false,
+    photos: []
   }),
   actions: {
-    async getAlbums(albumId) {
-      this.loading = true;
+    async fetchAlbums() {
       try {
-        const response = await fetch(`https://jsonplaceholder.typicode.com/photos?albumId=${albumId}`);
-        const data = await response.json();
-        this.albums = data;
+        const response = await fetch('https://jsonplaceholder.typicode.com/albums');
+        if (!response.ok) {
+          throw new Error('Failed to fetch albums');
+        }
+        this.albums = await response.json();
       } catch (error) {
         console.error('Error fetching albums:', error);
-      } finally {
-        this.loading = false;
       }
     },
-  },
+    async fetchPhotos(albumId) {
+      try {
+        const response = await fetch(`https://jsonplaceholder.typicode.com/photos?albumId=${albumId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch photos');
+        }
+        this.photos = await response.json();
+      } catch (error) {
+        console.error('Error fetching photos:', error);
+      }
+    }
+  }
 });
